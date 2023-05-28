@@ -11,12 +11,12 @@ import java.util.Set;
 @Data
 public class StarWarsCharacterDTO {
 
-    @JsonIgnore
+    
     private Integer peopleId;
 
     private String characterName;
 
     private int characterHeight;
 
-    private Set<Movie> movies;
+    private Set<MovieDTO> movies;
 }

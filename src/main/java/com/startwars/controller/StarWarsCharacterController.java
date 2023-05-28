@@ -35,9 +35,14 @@ public class StarWarsCharacterController {
 	}
 
 	@PostMapping("saveCharacter")
-	public ResponseEntity<StarWarsCharacter> saveCharacter(@RequestBody StarWarsCharacterDTO character) {
-		StarWarsCharacter character2 = this.characterService.saveCharacterInfo(character);
-		return new ResponseEntity<StarWarsCharacter>(character2, HttpStatus.CREATED);
+	public ResponseEntity<StarWarsCharacterDTO> saveCharacter(@RequestBody StarWarsCharacterDTO character) {
+		StarWarsCharacterDTO character2 = this.characterService.saveCharacterInfo(character);
+		return new ResponseEntity<StarWarsCharacterDTO>(character2, HttpStatus.CREATED);
+	}
+	@PostMapping("saveMovie")
+	public ResponseEntity<MovieDTO> saveMovie(@RequestBody MovieDTO movie) {
+		MovieDTO savedMovie = this.characterService.saveMovieInfo(movie);
+		return new ResponseEntity<MovieDTO>(savedMovie, HttpStatus.CREATED);
 	}
 	
 	@GetMapping("getCharacters/{characterName}/{pageNo}/{entries}")
@@ -51,15 +56,15 @@ public class StarWarsCharacterController {
 	}
 
 	@GetMapping("getAll")
-	public Iterable<StarWarsCharacterDTO> getAllCharacters(){
-		Iterable<StarWarsCharacterDTO> characters = this.characterService.getAllCharacters();
+	public List<StarWarsCharacterDTO> getAllCharacters(){
+		List<StarWarsCharacterDTO> characters = this.characterService.getAllCharacters();
 		System.out.println(characters);
 		return characters;
 	}
 
 	@GetMapping("getAllMovies")
-	public Iterable<MovieDTO> getAllMovies(){
-		Iterable<MovieDTO> characters = this.characterService.getAllMovies();
+	public List<MovieDTO> getAllMovies(){
+		List<MovieDTO> characters = this.characterService.getAllMovies();
 		System.out.println(characters);
 		return characters;
 	}

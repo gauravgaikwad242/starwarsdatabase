@@ -11,10 +11,10 @@ import java.util.Set;
 @Data
 public class MovieDTO {
 
-    @JsonIgnore
+    
     private Integer movieId;
 
     private String movieName;
 
-    private Set<StarWarsCharacter> movieCharacters;
+    private Set<StarWarsCharacterDTO> movieCharacters;
 }

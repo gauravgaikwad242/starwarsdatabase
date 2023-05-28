@@ -32,7 +32,7 @@ public class Movie {
 	private String movieName;
 	
 //	@Column(name = "movie_characters")
-	@ManyToMany(mappedBy = "movies",fetch = FetchType.LAZY)
+	@ManyToMany(cascade = {CascadeType.ALL},mappedBy = "movies",fetch = FetchType.LAZY)
 //	@JsonBackReference
 	@JsonIgnore
 	private Set<StarWarsCharacter> movieCharacters; 

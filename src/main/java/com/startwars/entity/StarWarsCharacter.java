@@ -40,6 +40,8 @@ public class StarWarsCharacter {
 	
 	@ManyToMany(cascade = {CascadeType.MERGE,CascadeType.PERSIST},fetch = FetchType.LAZY)
 //	@JsonManagedReference
+	@JoinColumn(name = "character_movie"
+				)
 	@JsonIgnore
 	private Set<Movie> movies;
 	

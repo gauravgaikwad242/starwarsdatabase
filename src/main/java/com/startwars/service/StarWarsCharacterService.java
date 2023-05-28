@@ -3,6 +3,7 @@ package com.startwars.service;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -24,21 +25,10 @@ public class StarWarsCharacterService {
 	
 	@PostConstruct
 	public void handler() {
-//		for (StarWarsCharacter character : this.findByCharacterName("Owen Lars", PageRequest.of(2, 3))) {
-//			System.out.println("::"+character.toString());
-//		}
-//		Movie movie1 = new Movie("firstMovie");
-//		Movie movie2 = new Movie("secondMovie");
-//		Movie movie3 = new Movie("thirdMovie");
-//		Movie movie4 = new Movie("fourthMovie");
-//		
-//		StarWarsCharacter character1 = new StarWarsCharacter("sam",120,List.of(movie1,movie3,movie4));
-//		StarWarsCharacter character2 = new StarWarsCharacter("john",180,List.of(movie1,movie2,movie4));
-//		this.savePeopleInfo(character1);
-//		this.savePeopleInfo(character2);
 		
 	}
-
+	@Autowired
+	private  MappingServive mappingServive;
 	@Autowired
 	private StarWarsCharacterDao starWarsCharacterDao;
 	
@@ -54,54 +44,48 @@ public class StarWarsCharacterService {
 	public Movie saveMovie(Movie movie) {
 		return this.moviesDao.save(movie);
 	}
-	public Iterable<StarWarsCharacterDTO> getAllCharacters(){
+	public List<StarWarsCharacterDTO> getAllCharacters(){
 		Iterable<StarWarsCharacter> characters = this.starWarsCharacterDao.findAll();
-		List<StarWarsCharacterDTO> characterDTOs = new ArrayList<>();
-		characters.forEach((character)->{
-			System.out.println();
-			System.out.println(character.getCharacterName());
-			System.out.println(character.getMovies());
-			System.out.println("-------------------");
-			//mapping
-			StarWarsCharacterDTO starWarsCharacterDTO = new StarWarsCharacterDTO();
-			starWarsCharacterDTO.setCharacterName(character.getCharacterName());
-			starWarsCharacterDTO.setCharacterHeight(character.getCharacterHeight());
-			starWarsCharacterDTO.setMovies(character.getMovies());
-			characterDTOs.add(starWarsCharacterDTO);
-		});
-		return characterDTOs;
+
+		return this.mappingServive.mapListOfCharacterToDto(characters);
 	}
 	
-	public Iterable<MovieDTO> getAllMovies(){
+	public List<MovieDTO> getAllMovies(){
 		Iterable<Movie> allMovies= this.moviesDao.findAll();
-		List<MovieDTO> allMoviesDto = new ArrayList<>();
-		allMovies.forEach((movie)->{
-			System.out.println();
-			System.out.println(movie.getMovieName());
-			System.out.println(movie.getMovieCharacters());
-			System.out.println("-------------------");
-
-			//mapping
-			MovieDTO movieDTO = new MovieDTO();
-			movieDTO.setMovieName(movie.getMovieName());
-			movieDTO.setMovieCharacters(movie.getMovieCharacters());
-			allMoviesDto.add(movieDTO);
-		});
-		return allMoviesDto;
+		return this.mappingServive.mapListOfMovieToDTO(allMovies);
 	}
 
-	public StarWarsCharacter saveCharacterInfo(StarWarsCharacterDTO starWarsCharacterDTO){
+	public StarWarsCharacterDTO saveCharacterInfo(StarWarsCharacterDTO starWarsCharacterDTO){
 		StarWarsCharacter starWarsCharacter = new StarWarsCharacter();
 		Set<Movie> movies = new HashSet<>();
 		starWarsCharacterDTO.getMovies().forEach((movie) -> {
-			Movie moviefetched = this.moviesDao.findById(movie.getMovieId()).orElse(new Movie());
-			movies.add(moviefetched);
+			Optional<Movie> moviefetched = this.moviesDao.findById(movie.getMovieId());
+			if(moviefetched.isPresent()){
+				movies.add(moviefetched.get());
+			}
 		});
 		starWarsCharacter.setCharacterHeight(starWarsCharacterDTO.getCharacterHeight());
 		starWarsCharacter.setCharacterName(starWarsCharacterDTO.getCharacterName());
 		starWarsCharacter.setMovies(movies);
 
 		StarWarsCharacter savedCharacter = this.starWarsCharacterDao.save(starWarsCharacter);
-		return savedCharacter;
+		return this.mappingServive.mapStarWarsCharacterDtoToStarWarsCharacter(savedCharacter);
+	}
+
+	public MovieDTO saveMovieInfo(MovieDTO movieDTO){
+		Movie movie = this.mappingServive.mapMovieDTOToMoviePartial(movieDTO);
+		Set<StarWarsCharacter> starWarsCharacters = new HashSet<>();
+		movieDTO.getMovieCharacters().forEach(character -> {
+			Optional<StarWarsCharacter> starWarCharacter =
+								 this.starWarsCharacterDao.findById(character.getPeopleId());
+			if(starWarCharacter.isPresent()){
+				starWarsCharacters.add(starWarCharacter.get());
+			}
+		});
+		movie.setMovieCharacters(starWarsCharacters);
+		Movie savedMovie = this.moviesDao.save(movie);
+		System.out.println(savedMovie);
+		System.out.println(savedMovie.getMovieCharacters());
+		return this.mappingServive.mapMovieToMovieDTO(savedMovie);
 	}
 }
