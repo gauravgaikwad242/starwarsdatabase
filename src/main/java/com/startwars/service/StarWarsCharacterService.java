@@ -1,7 +1,9 @@
 package com.startwars.service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -86,5 +88,20 @@ public class StarWarsCharacterService {
 			allMoviesDto.add(movieDTO);
 		});
 		return allMoviesDto;
+	}
+
+	public StarWarsCharacter saveCharacterInfo(StarWarsCharacterDTO starWarsCharacterDTO){
+		StarWarsCharacter starWarsCharacter = new StarWarsCharacter();
+		Set<Movie> movies = new HashSet<>();
+		starWarsCharacterDTO.getMovies().forEach((movie) -> {
+			Movie moviefetched = this.moviesDao.findById(movie.getMovieId()).orElse(new Movie());
+			movies.add(moviefetched);
+		});
+		starWarsCharacter.setCharacterHeight(starWarsCharacterDTO.getCharacterHeight());
+		starWarsCharacter.setCharacterName(starWarsCharacterDTO.getCharacterName());
+		starWarsCharacter.setMovies(movies);
+
+		StarWarsCharacter savedCharacter = this.starWarsCharacterDao.save(starWarsCharacter);
+		return savedCharacter;
 	}
 }

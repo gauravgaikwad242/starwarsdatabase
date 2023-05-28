@@ -33,6 +33,12 @@ public class StarWarsCharacterController {
 		StarWarsCharacter character2 = this.characterService.savePeopleInfo(character);
 		return new ResponseEntity<StarWarsCharacter>(character2, HttpStatus.CREATED);
 	}
+
+	@PostMapping("saveCharacter")
+	public ResponseEntity<StarWarsCharacter> saveCharacter(@RequestBody StarWarsCharacterDTO character) {
+		StarWarsCharacter character2 = this.characterService.saveCharacterInfo(character);
+		return new ResponseEntity<StarWarsCharacter>(character2, HttpStatus.CREATED);
+	}
 	
 	@GetMapping("getCharacters/{characterName}/{pageNo}/{entries}")
 	public List<StarWarsCharacter> getCharacterByPage(
@@ -57,5 +63,7 @@ public class StarWarsCharacterController {
 		System.out.println(characters);
 		return characters;
 	}
+
+//	public MovieDTO updateMovieData()
 
 }
